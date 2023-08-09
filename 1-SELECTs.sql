@@ -1,14 +1,14 @@
-USE kb301_slabikov_lab1;
+п»їUSE kb301_slabikov_lab1;
 
 /*
- * 0 - дата поступления товара
- * 1 - дата продажи товара
+ * 0 - РґР°С‚Р° РїРѕСЃС‚СѓРїР»РµРЅРёСЏ С‚РѕРІР°СЂР°
+ * 1 - РґР°С‚Р° РїСЂРѕРґР°Р¶Рё С‚РѕРІР°СЂР°
 */
 
-/* Количество определенного товара во всех магазинах */
-SELECT tip.t_name         AS Название_товара,
-       Sum(tovari.amount) AS Количество,
-       izmer.m_name       AS Единицы_Измерения
+/* РљРѕР»РёС‡РµСЃС‚РІРѕ РѕРїСЂРµРґРµР»РµРЅРЅРѕРіРѕ С‚РѕРІР°СЂР° РІРѕ РІСЃРµС… РјР°РіР°Р·РёРЅР°С… */
+SELECT tip.t_name         AS РќР°Р·РІР°РЅРёРµ_С‚РѕРІР°СЂР°,
+       Sum(tovari.amount) AS РљРѕР»РёС‡РµСЃС‚РІРѕ,
+       izmer.m_name       AS Р•РґРёРЅРёС†С‹_РР·РјРµСЂРµРЅРёСЏ
 FROM   slabikov.tovar AS tovari
        INNER JOIN slabikov.tip_tovara AS tip
                ON tip.id_t = tovari.id_t
@@ -18,19 +18,19 @@ GROUP  BY tip.t_name,
           izmer.m_name
 
 
-/* Определение средней цены товаров среди всех магазинов */
-SELECT tip.t_name        AS Товар,
-       Avg(tovari.price) AS Сред_Цена
+/* РћРїСЂРµРґРµР»РµРЅРёРµ СЃСЂРµРґРЅРµР№ С†РµРЅС‹ С‚РѕРІР°СЂРѕРІ СЃСЂРµРґРё РІСЃРµС… РјР°РіР°Р·РёРЅРѕРІ */
+SELECT tip.t_name        AS РўРѕРІР°СЂ,
+       Avg(tovari.price) AS РЎСЂРµРґ_Р¦РµРЅР°
 FROM   slabikov.tovar AS tovari
        INNER JOIN slabikov.tip_tovara AS tip
                ON tip.id_t = tovari.id_t
 GROUP  BY tip.t_name
 
 
-/* Количество проданных порошков (с 2021-10-06 по текущую дату) по каждому магазину (с ед. измерения)*/
-SELECT markets.NAME       AS Магазин,
-       Sum(tovari.amount) AS Количество,
-       izmer.m_name       AS Единицы_Измерения
+/* РљРѕР»РёС‡РµСЃС‚РІРѕ РїСЂРѕРґР°РЅРЅС‹С… РїРѕСЂРѕС€РєРѕРІ (СЃ 2021-10-06 РїРѕ С‚РµРєСѓС‰СѓСЋ РґР°С‚Сѓ) РїРѕ РєР°Р¶РґРѕРјСѓ РјР°РіР°Р·РёРЅСѓ (СЃ РµРґ. РёР·РјРµСЂРµРЅРёСЏ)*/
+SELECT markets.NAME       AS РњР°РіР°Р·РёРЅ,
+       Sum(tovari.amount) AS РљРѕР»РёС‡РµСЃС‚РІРѕ,
+       izmer.m_name       AS Р•РґРёРЅРёС†С‹_РР·РјРµСЂРµРЅРёСЏ
 FROM   slabikov.market AS markets
        INNER JOIN slabikov.tovar AS tovari
                ON tovari.id_m = markets.id_m
@@ -41,15 +41,15 @@ FROM   slabikov.market AS markets
 WHERE  tovari.priznak = 1
        AND '2021-10-06' <= tovari.post_prod
        AND tovari.post_prod <= Getdate()
-       AND tip.t_name = 'порошки'
+       AND tip.t_name = 'РїРѕСЂРѕС€РєРё'
 GROUP  BY markets.NAME,
           izmer.m_name
 
 
-/* Определение количества товаров по группам в каждом магазине */
-SELECT markets.NAME       AS Магазин,
-       t_group.g_name     AS Группа_товаров,
-       Sum(tovari.amount) AS Количество
+/* РћРїСЂРµРґРµР»РµРЅРёРµ РєРѕР»РёС‡РµСЃС‚РІР° С‚РѕРІР°СЂРѕРІ РїРѕ РіСЂСѓРїРїР°Рј РІ РєР°Р¶РґРѕРј РјР°РіР°Р·РёРЅРµ */
+SELECT markets.NAME       AS РњР°РіР°Р·РёРЅ,
+       t_group.g_name     AS Р“СЂСѓРїРїР°_С‚РѕРІР°СЂРѕРІ,
+       Sum(tovari.amount) AS РљРѕР»РёС‡РµСЃС‚РІРѕ
 FROM   slabikov.market AS markets
        INNER JOIN slabikov.tovar AS tovari
                ON tovari.id_m = markets.id_m
@@ -61,9 +61,9 @@ GROUP  BY markets.NAME,
           t_group.g_name
 
 
-/* Общая сумма денег, вырученная за продажу товаров (на 2021-10-10) по каждому типу*/
-SELECT tip.t_name        AS Тип_товара,
-       Sum(tovari.price) AS Выручка
+/* РћР±С‰Р°СЏ СЃСѓРјРјР° РґРµРЅРµРі, РІС‹СЂСѓС‡РµРЅРЅР°СЏ Р·Р° РїСЂРѕРґР°Р¶Сѓ С‚РѕРІР°СЂРѕРІ (РЅР° 2021-10-10) РїРѕ РєР°Р¶РґРѕРјСѓ С‚РёРїСѓ*/
+SELECT tip.t_name        AS РўРёРї_С‚РѕРІР°СЂР°,
+       Sum(tovari.price) AS Р’С‹СЂСѓС‡РєР°
 FROM   slabikov.tip_tovara AS tip
        INNER JOIN slabikov.tovar AS tovari
                ON tovari.id_t = tip.id_t
@@ -72,19 +72,19 @@ WHERE  tovari.priznak = 1
 GROUP  BY tip.t_name;
 
 
-/* Определение мин. цены товаров среди всех магазинов */
-SELECT tip.t_name        AS Товар,
-       Min(tovari.price) AS Мин_Цена
+/* РћРїСЂРµРґРµР»РµРЅРёРµ РјРёРЅ. С†РµРЅС‹ С‚РѕРІР°СЂРѕРІ СЃСЂРµРґРё РІСЃРµС… РјР°РіР°Р·РёРЅРѕРІ */
+SELECT tip.t_name        AS РўРѕРІР°СЂ,
+       Min(tovari.price) AS РњРёРЅ_Р¦РµРЅР°
 FROM   slabikov.tovar AS tovari
        INNER JOIN slabikov.tip_tovara AS tip
                ON tip.id_t = tovari.id_t
 GROUP  BY tip.t_name
 
 
-/* Кол-во товаров, которые поступят в продажу к 2021-10-9 по каждому типу */
-SELECT tip.t_name         AS Тип_товара,
-       Sum(tovari.amount) AS Количество_товара,
-       izmer.m_name       AS Единицы_измерения
+/* РљРѕР»-РІРѕ С‚РѕРІР°СЂРѕРІ, РєРѕС‚РѕСЂС‹Рµ РїРѕСЃС‚СѓРїСЏС‚ РІ РїСЂРѕРґР°Р¶Сѓ Рє 2021-10-9 РїРѕ РєР°Р¶РґРѕРјСѓ С‚РёРїСѓ */
+SELECT tip.t_name         AS РўРёРї_С‚РѕРІР°СЂР°,
+       Sum(tovari.amount) AS РљРѕР»РёС‡РµСЃС‚РІРѕ_С‚РѕРІР°СЂР°,
+       izmer.m_name       AS Р•РґРёРЅРёС†С‹_РёР·РјРµСЂРµРЅРёСЏ
 FROM   slabikov.tip_tovara AS tip
        INNER JOIN slabikov.tovar AS tovari
                ON tip.id_t = tovari.id_t
@@ -96,19 +96,19 @@ GROUP  BY tip.t_name,
           izmer.m_name
 
 
-/* Определение макс. цены товаров среди всех магазинов */
-SELECT tip.t_name        AS Товар,
-       Max(tovari.price) AS Макс_Цена
+/* РћРїСЂРµРґРµР»РµРЅРёРµ РјР°РєСЃ. С†РµРЅС‹ С‚РѕРІР°СЂРѕРІ СЃСЂРµРґРё РІСЃРµС… РјР°РіР°Р·РёРЅРѕРІ */
+SELECT tip.t_name        AS РўРѕРІР°СЂ,
+       Max(tovari.price) AS РњР°РєСЃ_Р¦РµРЅР°
 FROM   slabikov.tovar AS tovari
        INNER JOIN slabikov.tip_tovara AS tip
                ON tip.id_t = tovari.id_t
 GROUP  BY tip.t_name
 
 
-/* Количество овощей в наличии (на 2021-10-09) по каждому магазину (с ед. измерения)*/
-SELECT markets.NAME       AS Магазин,
-       Sum(tovari.amount) AS Количество,
-       izmer.m_name       AS Единицы_Измерения
+/* РљРѕР»РёС‡РµСЃС‚РІРѕ РѕРІРѕС‰РµР№ РІ РЅР°Р»РёС‡РёРё (РЅР° 2021-10-09) РїРѕ РєР°Р¶РґРѕРјСѓ РјР°РіР°Р·РёРЅСѓ (СЃ РµРґ. РёР·РјРµСЂРµРЅРёСЏ)*/
+SELECT markets.NAME       AS РњР°РіР°Р·РёРЅ,
+       Sum(tovari.amount) AS РљРѕР»РёС‡РµСЃС‚РІРѕ,
+       izmer.m_name       AS Р•РґРёРЅРёС†С‹_РР·РјРµСЂРµРЅРёСЏ
 FROM   slabikov.market AS markets
        INNER JOIN slabikov.tovar AS tovari
                ON tovari.id_m = markets.id_m
@@ -118,26 +118,26 @@ FROM   slabikov.market AS markets
                ON tip.id_i = izmer.id_i
 WHERE  tovari.priznak = 0
        AND tovari.post_prod <= '2021-10-09'
-       AND tip.t_name = 'овощи'
+       AND tip.t_name = 'РѕРІРѕС‰Рё'
 GROUP  BY markets.NAME,
           izmer.m_name
 
 
-/* Определение мин. цены у напитков по каждому магазину */
-SELECT markets.NAME      AS Магазин,
-       Min(tovari.price) AS Цена
+/* РћРїСЂРµРґРµР»РµРЅРёРµ РјРёРЅ. С†РµРЅС‹ Сѓ РЅР°РїРёС‚РєРѕРІ РїРѕ РєР°Р¶РґРѕРјСѓ РјР°РіР°Р·РёРЅСѓ */
+SELECT markets.NAME      AS РњР°РіР°Р·РёРЅ,
+       Min(tovari.price) AS Р¦РµРЅР°
 FROM   slabikov.market AS markets
        INNER JOIN slabikov.tovar AS tovari
                ON tovari.id_m = markets.id_m
        INNER JOIN slabikov.tip_tovara AS tip
                ON tip.id_t = tovari.id_t
-WHERE  tip.t_name = 'напитки'
+WHERE  tip.t_name = 'РЅР°РїРёС‚РєРё'
 GROUP  BY markets.NAME;
 
 
-/* Средняя цена проданных групп товаров по всем магазинам */
-SELECT t_group.g_name    AS Группа_товара,
-       Avg(tovari.price) AS Средняя_цена_продажи
+/* РЎСЂРµРґРЅСЏСЏ С†РµРЅР° РїСЂРѕРґР°РЅРЅС‹С… РіСЂСѓРїРї С‚РѕРІР°СЂРѕРІ РїРѕ РІСЃРµРј РјР°РіР°Р·РёРЅР°Рј */
+SELECT t_group.g_name    AS Р“СЂСѓРїРїР°_С‚РѕРІР°СЂР°,
+       Avg(tovari.price) AS РЎСЂРµРґРЅСЏСЏ_С†РµРЅР°_РїСЂРѕРґР°Р¶Рё
 FROM   slabikov.t_group AS t_group
        INNER JOIN slabikov.tip_tovara AS tip
                ON tip.id_g = t_group.id_g

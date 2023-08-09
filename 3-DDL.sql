@@ -1,4 +1,4 @@
-CREATE TABLE KB301_Slabikov_Lab3.dbo.recordings (
+п»їCREATE TABLE KB301_Slabikov_Lab3.dbo.recordings (
 	id int NOT NULL,
 	car_number varchar(16) NOT NULL,
 	in_time datetime NULL,
@@ -51,7 +51,7 @@ CREATE TABLE KB301_Slabikov_Lab3.dbo.registry (
 );
 
 
--- Правильность номера
+-- РџСЂР°РІРёР»СЊРЅРѕСЃС‚СЊ РЅРѕРјРµСЂР°
 alter table dbo.registry
 add constraint CHK_car_number 
 check(
@@ -61,7 +61,7 @@ check(
 go
 
 
--- Триггер для ограничений
+-- РўСЂРёРіРіРµСЂ РґР»СЏ РѕРіСЂР°РЅРёС‡РµРЅРёР№
 use KB301_Slabikov_Lab3
 go
 create or alter trigger validating_trigger 
@@ -75,7 +75,7 @@ last_time datetime,
 post int,
 city_name varchar(50)
 )
-insert into @existing_car (in_city, last_time, post, city_name) -- Свежая машина из реестра с номером как у inserted
+insert into @existing_car (in_city, last_time, post, city_name) -- РЎРІРµР¶Р°СЏ РјР°С€РёРЅР° РёР· СЂРµРµСЃС‚СЂР° СЃ РЅРѕРјРµСЂРѕРј РєР°Рє Сѓ inserted
 select top 1 r.in_city, r.time, r.post, posts.city 
 from inserted as i, dbo.registry as r 
 join dbo.police_posts as posts on posts.id = r.post
@@ -87,11 +87,11 @@ if exists (
 	where existing.in_city = new.in_city or existing.last_time = new.time
 )
 begin
-	print('Нельзя два раза подряд въехать / выехать в населённый пункт')
+	print('РќРµР»СЊР·СЏ РґРІР° СЂР°Р·Р° РїРѕРґСЂСЏРґ РІСЉРµС…Р°С‚СЊ / РІС‹РµС…Р°С‚СЊ РІ РЅР°СЃРµР»С‘РЅРЅС‹Р№ РїСѓРЅРєС‚')
 	return;
 end
 
-declare @city_name varchar(50) = null -- Город из inserted
+declare @city_name varchar(50) = null -- Р“РѕСЂРѕРґ РёР· inserted
 select @city_name = posts.city 
 from inserted as i 
 join dbo.police_posts as posts on posts.id = i.post
@@ -101,7 +101,7 @@ if exists (
 	where new.in_city = 0 and existing.city_name != @city_name
 )
 begin
-	print('Нельзя выехать из города, в который до этого не въехали')
+	print('РќРµР»СЊР·СЏ РІС‹РµС…Р°С‚СЊ РёР· РіРѕСЂРѕРґР°, РІ РєРѕС‚РѕСЂС‹Р№ РґРѕ СЌС‚РѕРіРѕ РЅРµ РІСЉРµС…Р°Р»Рё')
 	return;
 end
 
@@ -110,12 +110,12 @@ select * from inserted
 go
 
 
--- Триггер для заполнения вспомогательной таблицы
+-- РўСЂРёРіРіРµСЂ РґР»СЏ Р·Р°РїРѕР»РЅРµРЅРёСЏ РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅРѕР№ С‚Р°Р±Р»РёС†С‹
 create or alter trigger after_trigger 
 on dbo.registry after insert
 as
 
-declare @inserted_city varchar(50) -- Город из inserted
+declare @inserted_city varchar(50) -- Р“РѕСЂРѕРґ РёР· inserted
 select @inserted_city = posts.city from inserted as i
 join dbo.police_posts as posts on i.post = posts.id
 
@@ -126,7 +126,7 @@ last_time datetime,
 post int,
 city_name varchar(50)
 )
-insert into @existing_car (in_city, last_time, post, city_name) -- Находит последнюю по времени машину с тем же номером и с тем же городом в реестре
+insert into @existing_car (in_city, last_time, post, city_name) -- РќР°С…РѕРґРёС‚ РїРѕСЃР»РµРґРЅСЋСЋ РїРѕ РІСЂРµРјРµРЅРё РјР°С€РёРЅСѓ СЃ С‚РµРј Р¶Рµ РЅРѕРјРµСЂРѕРј Рё СЃ С‚РµРј Р¶Рµ РіРѕСЂРѕРґРѕРј РІ СЂРµРµСЃС‚СЂРµ
 select top 1 r.in_city, r.time, r.post, posts.city 
 from inserted as i, dbo.registry as r 
 join dbo.police_posts as posts on posts.id = r.post
@@ -151,10 +151,10 @@ end
 go
 
 
--- Местные машины
+-- РњРµСЃС‚РЅС‹Рµ РјР°С€РёРЅС‹
 create or alter view domestic_cars
 as
-select r.car_number as Номер_машины, r.in_time as Время_въезда, r.out_time as Время_выезда, r.city as Город, reg.name as Регион 
+select r.car_number as РќРѕРјРµСЂ_РјР°С€РёРЅС‹, r.in_time as Р’СЂРµРјСЏ_РІСЉРµР·РґР°, r.out_time as Р’СЂРµРјСЏ_РІС‹РµР·РґР°, r.city as Р“РѕСЂРѕРґ, reg.name as Р РµРіРёРѕРЅ 
 from dbo.recordings as r 
 join dbo.police_posts as ins on r.in_post = ins.id
 join dbo.police_posts as outs on r.out_post = outs.id
@@ -164,10 +164,10 @@ where r.in_time > r.out_time and ins.city = outs.city
 and SUBSTRING(r.car_number, 7, 3) = cast(dict.alternative_number as varchar)  
 go
 
--- Транзитные машины
+-- РўСЂР°РЅР·РёС‚РЅС‹Рµ РјР°С€РёРЅС‹
 create or alter view tranzit_cars
 as
-select r.car_number as Номер_машины, r.in_time as Время_въезда, r.out_time as Время_выезда, r.city as Город, dict.name as Регион 
+select r.car_number as РќРѕРјРµСЂ_РјР°С€РёРЅС‹, r.in_time as Р’СЂРµРјСЏ_РІСЉРµР·РґР°, r.out_time as Р’СЂРµРјСЏ_РІС‹РµР·РґР°, r.city as Р“РѕСЂРѕРґ, dict.name as Р РµРіРёРѕРЅ 
 from dbo.recordings as r 
 join dbo.police_posts as ins on r.in_post = ins.id
 join dbo.police_posts as outs on r.out_post = outs.id
@@ -177,10 +177,10 @@ where r.in_time < r.out_time and r.in_post != r.out_post and ins.city = outs.cit
 and SUBSTRING(r.car_number, 7, 3) != cast(dict.number as varchar)  
 go
 
--- Иногородние машины
+-- РРЅРѕРіРѕСЂРѕРґРЅРёРµ РјР°С€РёРЅС‹
 create or alter view nonresident_cars
 as
-select r.car_number as Номер_машины, r.in_time as Время_въезда, r.out_time as Время_выезда, ins.city as Город, reg.name as Регион 
+select r.car_number as РќРѕРјРµСЂ_РјР°С€РёРЅС‹, r.in_time as Р’СЂРµРјСЏ_РІСЉРµР·РґР°, r.out_time as Р’СЂРµРјСЏ_РІС‹РµР·РґР°, ins.city as Р“РѕСЂРѕРґ, reg.name as Р РµРіРёРѕРЅ 
 from dbo.recordings as r 
 join dbo.police_posts as ins on r.in_post = ins.id
 join dbo.police_posts as outs on r.out_post = outs.id
@@ -189,24 +189,24 @@ join dbo.regions as reg on reg.number = dict.region_number
 where r.in_time < r.out_time and r.in_post = r.out_post 
 go
 
--- Буква без кириллицы
+-- Р‘СѓРєРІР° Р±РµР· РєРёСЂРёР»Р»РёС†С‹
 INSERT INTO KB301_Slabikov_Lab3.dbo.registry
 VALUES
 (default, 1, getdate(), 'A134RA66', 6); 
 
--- Несуществующий регион
+-- РќРµСЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ СЂРµРіРёРѕРЅ
 INSERT INTO KB301_Slabikov_Lab3.dbo.registry
 VALUES
 (default, 1, getdate(), 'A134BA766', 6); 
 
--- Номер с 01
+-- РќРѕРјРµСЂ СЃ 01
 INSERT INTO KB301_Slabikov_Lab3.dbo.registry
 VALUES
 (default, 1, getdate(), 'A134BA01', 20); 
 
 delete from dbo.registry
 
--- Некорректный формат номера
+-- РќРµРєРѕСЂСЂРµРєС‚РЅС‹Р№ С„РѕСЂРјР°С‚ РЅРѕРјРµСЂР°
 INSERT INTO KB301_Slabikov_Lab3.dbo.registry
 VALUES
 (default, 1, getdate(), '11111166', 6); 
@@ -214,7 +214,7 @@ INSERT INTO KB301_Slabikov_Lab3.dbo.registry
 VALUES
 (default, 1, getdate(), '55', 6); 
 
--- Два раза подряд въехать в пост ГИБДД с номером 4
+-- Р”РІР° СЂР°Р·Р° РїРѕРґСЂСЏРґ РІСЉРµС…Р°С‚СЊ РІ РїРѕСЃС‚ Р“РР‘Р”Р” СЃ РЅРѕРјРµСЂРѕРј 4
 INSERT INTO KB301_Slabikov_Lab3.dbo.registry
 VALUES
 (default, 0, getdate(), 'A123BC74', 4);
@@ -223,7 +223,7 @@ VALUES
 (default, 0, getdate(), 'A123BC74', 4);
 DELETE FROM KB301_Slabikov_Lab3.dbo.registry
 
--- Въехать и выехать без таймаута
+-- Р’СЉРµС…Р°С‚СЊ Рё РІС‹РµС…Р°С‚СЊ Р±РµР· С‚Р°Р№РјР°СѓС‚Р°
 declare @t datetime = getdate()
 INSERT INTO KB301_Slabikov_Lab3.dbo.registry
 VALUES
@@ -233,7 +233,7 @@ VALUES
 (default, 1, getdate(), 'B123BC74', 4);
 DELETE FROM KB301_Slabikov_Lab3.dbo.registry
 
--- Два раза подряд выехать из Екатеринбурга  через разные посты
+-- Р”РІР° СЂР°Р·Р° РїРѕРґСЂСЏРґ РІС‹РµС…Р°С‚СЊ РёР· Р•РєР°С‚РµСЂРёРЅР±СѓСЂРіР°  С‡РµСЂРµР· СЂР°Р·РЅС‹Рµ РїРѕСЃС‚С‹
 INSERT INTO KB301_Slabikov_Lab3.dbo.registry
 VALUES
 (default, 0, getdate(), 'A143BC66', 1);
@@ -244,10 +244,10 @@ DELETE FROM KB301_Slabikov_Lab3.dbo.registry
 
 
 DELETE FROM KB301_Slabikov_Lab3.dbo.recordings
-/* Машина O777AO174 из ЧЕЛЯБ обл:
-1. выезд из ЧЕЛЯБ через 4 пост
-2. заезд в ЧЕЛЯБ через 6 пост
-Результат: машина местная
+/* РњР°С€РёРЅР° O777AO174 РёР· Р§Р•Р›РЇР‘ РѕР±Р»:
+1. РІС‹РµР·Рґ РёР· Р§Р•Р›РЇР‘ С‡РµСЂРµР· 4 РїРѕСЃС‚
+2. Р·Р°РµР·Рґ РІ Р§Р•Р›РЇР‘ С‡РµСЂРµР· 6 РїРѕСЃС‚
+Р РµР·СѓР»СЊС‚Р°С‚: РјР°С€РёРЅР° РјРµСЃС‚РЅР°СЏ
 */
 select * from dbo.domestic_cars
 INSERT INTO KB301_Slabikov_Lab3.dbo.registry
@@ -258,10 +258,10 @@ VALUES
 (default, 1, DATEADD(hour, 1, getdate()), 'O777AO01', 6);
 select * from dbo.domestic_cars
 
-/* Машина C456EF77 из МСК обл:
-1. заезд в  МСК через 12 пост
-2. выезд из МСК через 12 пост
-Результат: машина иногородняя
+/* РњР°С€РёРЅР° C456EF77 РёР· РњРЎРљ РѕР±Р»:
+1. Р·Р°РµР·Рґ РІ  РњРЎРљ С‡РµСЂРµР· 12 РїРѕСЃС‚
+2. РІС‹РµР·Рґ РёР· РњРЎРљ С‡РµСЂРµР· 12 РїРѕСЃС‚
+Р РµР·СѓР»СЊС‚Р°С‚: РјР°С€РёРЅР° РёРЅРѕРіРѕСЂРѕРґРЅСЏСЏ
 */
 select * from dbo.nonresident_cars
 INSERT INTO KB301_Slabikov_Lab3.dbo.registry
@@ -272,10 +272,10 @@ VALUES
 (default, 0, DATEADD(hour, 1, getdate()), 'C456EH77', 12);
 select * from dbo.nonresident_cars
 
-/* Машина A123BC66 из Свердловской обл:
-2. заезд в ЧЕЛЯБ через 4 пост
-3. выезд из ЧЕЛЯБ через 7 пост
-Результат: машина транзитная в ЧЕЛЯБ
+/* РњР°С€РёРЅР° A123BC66 РёР· РЎРІРµСЂРґР»РѕРІСЃРєРѕР№ РѕР±Р»:
+2. Р·Р°РµР·Рґ РІ Р§Р•Р›РЇР‘ С‡РµСЂРµР· 4 РїРѕСЃС‚
+3. РІС‹РµР·Рґ РёР· Р§Р•Р›РЇР‘ С‡РµСЂРµР· 7 РїРѕСЃС‚
+Р РµР·СѓР»СЊС‚Р°С‚: РјР°С€РёРЅР° С‚СЂР°РЅР·РёС‚РЅР°СЏ РІ Р§Р•Р›РЇР‘
 */
 select * from dbo.tranzit_cars
 INSERT INTO KB301_Slabikov_Lab3.dbo.registry

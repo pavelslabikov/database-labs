@@ -1,4 +1,4 @@
-use KB301_Slabikov_Lab2
+п»їuse KB301_Slabikov_Lab2
 
 
 CREATE TABLE dbo.debet_card (
@@ -58,12 +58,12 @@ INSERT INTO dbo.Exchange_rates (id,source_currency,target_currency,rate) VALUES
 go
 
 
-/* 1. Просмотр баланса карты по всем валютам где баланс > 0 */
+/* 1. РџСЂРѕСЃРјРѕС‚СЂ Р±Р°Р»Р°РЅСЃР° РєР°СЂС‚С‹ РїРѕ РІСЃРµРј РІР°Р»СЋС‚Р°Рј РіРґРµ Р±Р°Р»Р°РЅСЃ > 0 */
 CREATE FUNCTION dbo.getBalance()
 returns TABLE
     RETURN
-      SELECT card.currency AS Валюта,
-             card.balance  AS Баланс
+      SELECT card.currency AS Р’Р°Р»СЋС‚Р°,
+             card.balance  AS Р‘Р°Р»Р°РЅСЃ
       FROM   dbo.debet_card AS card
       WHERE  card.balance >= 0
 
@@ -72,7 +72,7 @@ go
 --drop function dbo.getBalance
 
 
-/* 3. Снятие денег в определённой валюте */
+/* 3. РЎРЅСЏС‚РёРµ РґРµРЅРµРі РІ РѕРїСЂРµРґРµР»С‘РЅРЅРѕР№ РІР°Р»СЋС‚Рµ */
 CREATE OR ALTER PROCEDURE dbo.addMoney(@currency NCHAR(3), @amount   MONEY)
 AS
   BEGIN
@@ -85,7 +85,7 @@ AS
 
 	  IF ( @enough = 0 )
 		BEGIN
-			PRINT( 'Добавляем новую валюту' )
+			PRINT( 'Р”РѕР±Р°РІР»СЏРµРј РЅРѕРІСѓСЋ РІР°Р»СЋС‚Сѓ' )
 			INSERT INTO dbo.Debet_card (currency,balance) VALUES (@currency, @amount)
 			RETURN 0
 		END
@@ -97,7 +97,7 @@ AS
 
       IF ( @enough = 0 )
         BEGIN
-            PRINT( 'Недостаточно средств на счёте' )
+            PRINT( 'РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ СЃСЂРµРґСЃС‚РІ РЅР° СЃС‡С‘С‚Рµ' )
 			RETURN -1
         END
 
@@ -106,7 +106,7 @@ AS
 	  SELECT @now = balance + @amount from dbo.debet_card where currency = @currency
 	  if (@now <= 0)
 		begin
-			print('удаляем из карты')
+			print('СѓРґР°Р»СЏРµРј РёР· РєР°СЂС‚С‹')
 			delete from dbo.debet_card where currency = @currency
 			return 0
 		end
@@ -115,7 +115,7 @@ AS
       SET    balance = balance + @amount
       WHERE  currency = @currency
 
-      PRINT( 'Успешное изменение баланса' )
+      PRINT( 'РЈСЃРїРµС€РЅРѕРµ РёР·РјРµРЅРµРЅРёРµ Р±Р°Р»Р°РЅСЃР°' )
 	  RETURN 0
   END;
 
@@ -123,7 +123,7 @@ go
 
 
 
-/* 4. Перевод из одной валюты в другую */
+/* 4. РџРµСЂРµРІРѕРґ РёР· РѕРґРЅРѕР№ РІР°Р»СЋС‚С‹ РІ РґСЂСѓРіСѓСЋ */
 CREATE OR ALTER PROCEDURE dbo.convertMoney(@source_curr NCHAR(3),
                               @amount      MONEY,
                               @target_curr NCHAR(3))
@@ -138,7 +138,7 @@ AS
 
 	  IF @exist < 2
 	  BEGIN
-		PRINT('Не найдена одна из валют на счёте')
+		PRINT('РќРµ РЅР°Р№РґРµРЅР° РѕРґРЅР° РёР· РІР°Р»СЋС‚ РЅР° СЃС‡С‘С‚Рµ')
 		RETURN -1
 	  END
 
@@ -157,21 +157,21 @@ AS
 	  EXEC dbo.addMoney @source_curr, @amount
       EXEC dbo.addMoney @target_curr, @rate
 
-      PRINT( 'Успешная конвертация' )
+      PRINT( 'РЈСЃРїРµС€РЅР°СЏ РєРѕРЅРІРµСЂС‚Р°С†РёСЏ' )
 	  return 0
   END;
 
 go
 
-/* 5. Баланс карты в одной валюте */
+/* 5. Р‘Р°Р»Р°РЅСЃ РєР°СЂС‚С‹ РІ РѕРґРЅРѕР№ РІР°Р»СЋС‚Рµ */
 CREATE FUNCTION dbo.getBalanceInCurrency(@curr NCHAR(3))
 returns TABLE
     RETURN
-      SELECT Sum(tabl.Баланс_карты * tabl.Курс_перевода)
+      SELECT Sum(tabl.Р‘Р°Р»Р°РЅСЃ_РєР°СЂС‚С‹ * tabl.РљСѓСЂСЃ_РїРµСЂРµРІРѕРґР°)
              AS
-             Баланс
-      FROM   (SELECT card.balance AS Баланс_карты,
-                     rates.rate   AS Курс_перевода
+             Р‘Р°Р»Р°РЅСЃ
+      FROM   (SELECT card.balance AS Р‘Р°Р»Р°РЅСЃ_РєР°СЂС‚С‹,
+                     rates.rate   AS РљСѓСЂСЃ_РїРµСЂРµРІРѕРґР°
               FROM   dbo.debet_card AS card
                      INNER JOIN dbo.exchange_rates AS rates
                              ON card.currency = rates.source_currency
@@ -181,24 +181,24 @@ go
 
                         
 
-/* Просмотр баланса карты по всем валютам где баланс > 0 */
+/* РџСЂРѕСЃРјРѕС‚СЂ Р±Р°Р»Р°РЅСЃР° РєР°СЂС‚С‹ РїРѕ РІСЃРµРј РІР°Р»СЋС‚Р°Рј РіРґРµ Р±Р°Р»Р°РЅСЃ > 0 */
 use KB301_Slabikov_Lab2
 select * from dbo.getBalance();
 
-/* Пополнение денег в определённой валюте */
+/* РџРѕРїРѕР»РЅРµРЅРёРµ РґРµРЅРµРі РІ РѕРїСЂРµРґРµР»С‘РЅРЅРѕР№ РІР°Р»СЋС‚Рµ */
 
 select * from dbo.getBalance();
 exec dbo.addMoney 'RUB', 500;
 select * from dbo.getBalance();
 
 
-/* Перевод из одной валюты в другую */
+/* РџРµСЂРµРІРѕРґ РёР· РѕРґРЅРѕР№ РІР°Р»СЋС‚С‹ РІ РґСЂСѓРіСѓСЋ */
 
 select * from dbo.getBalance();
 exec dbo.convertMoney 'USD', 2, 'RUB';
 select * from dbo.getBalance();
 
-/* Баланс карты в одной валюте */
+/* Р‘Р°Р»Р°РЅСЃ РєР°СЂС‚С‹ РІ РѕРґРЅРѕР№ РІР°Р»СЋС‚Рµ */
 select * from dbo.getBalanceInCurrency('RUB')
 go
 

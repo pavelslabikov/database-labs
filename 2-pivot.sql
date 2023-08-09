@@ -1,4 +1,4 @@
-use KB301_Slabikov_Lab2
+ο»Ώuse KB301_Slabikov_Lab2
 go
 
 create or alter procedure show_rates
@@ -11,7 +11,7 @@ begin
 						FOR xml path('')
                     ) , 1 , 1 , '')
 
-	set @query = 'select cu as [Κσπρ βΰλώς], ' + @result +' 
+	set @query = 'select cu as [ΠΡƒΡ€Ρ Π²Π°Π»ΡΡ‚], ' + @result +' 
 from (select distinct source_currency as cu, target_currency as ta, rate as r from dbo.exchange_rates) as curr
 pivot (sum(r) for ta in (' + @result + ') ) as t'
 	exec(@query)
@@ -20,7 +20,7 @@ end
 go
 
 
-select cu as [Κσπρ βΰλώς], EUR, GBP, NZD, RUB, USD 
+select cu as [ΠΡƒΡ€Ρ Π²Π°Π»ΡΡ‚], EUR, GBP, NZD, RUB, USD 
 from (select distinct source_currency as cu, target_currency as ta, rate as r from dbo.exchange_rates) as curr
 pivot (sum(r) for ta in (EUR, GBP, NZD, RUB, USD) ) as t
 
